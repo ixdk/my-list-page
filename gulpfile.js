@@ -16,6 +16,8 @@ const beautify = require('gulp-jsbeautifier');
 const sourcemaps = require('gulp-sourcemaps');
 const hash_src = require('gulp-hash-src');
 const posthtml = require('gulp-posthtml');
+const fs = require('fs');
+const path = require('path');
 const svgSprite = require('gulp-svg-sprite');
 const include = require('posthtml-include');
 const richtypo = require('posthtml-richtypo');
@@ -178,6 +180,44 @@ function imgProcess() {
 }
 
 /**
+ * Автогенерация SCSS-файла с правилами для коллажа фоновых изображений
+ */
+function generateBg(done) {
+  const imgDir = path.join(__dirname, 'src', 'img');
+  const outFile = path.join(__dirname, 'src', 'sass', '_generated_bg.scss');
+
+  fs.readdir(imgDir, (err, files) => {
+    if (err) return done();
+    const imgs = files.filter((f) => /\.(jpe?g|png|webp|gif)$/i.test(f));
+    if (imgs.length === 0) {
+      // write empty rule to avoid build errors
+      fs.writeFileSync(outFile, '/* no images for collage */\n');
+      return done();
+    }
+
+    // Если фото только одно — просто повторяем его на весь экран
+    if (imgs.length === 1) {
+      const content = `/* generated: do not edit */\nbody::before {\n  content: '';\n  position: fixed;\n  left: 0;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  width: 100%;\n  height: 100%;\n  background-image: url('../img/${imgs[0]}');\n  background-size: cover;\n  background-repeat: repeat;\n  background-attachment: fixed;\n  filter: saturate(0.9) contrast(0.95);\n  opacity: 0.95;\n  pointer-events: none;\n  z-index: 0;\n}\n`;
+      fs.writeFileSync(outFile, content);
+      done();
+      return;
+    }
+
+    // Если фото больше одного — генерируем CSS grid через ::after
+    // В _generated_bg.scss создаём grid-контейнер поверх body
+    let grid = `.bg-collage-grid {\n  position: fixed;\n  left: 0;\n  top: 0;\n  width: 100vw;\n  height: 100vh;\n  display: grid;\n  grid-template-columns: repeat(${imgs.length}, 1fr);\n  grid-template-rows: 1fr;\n  z-index: 0;\n  pointer-events: none;\n}\n`;
+    imgs.forEach((f, i) => {
+      grid += `.bg-collage-grid .bg-tile-${i} {\n  background-image: url('../img/${f}');\n  background-size: cover;\n  background-position: center;\n  background-repeat: no-repeat;\n  opacity: 0.95;\n}\n`;
+    });
+
+    grid += `.bg-collage-grid > div { width: 100%; height: 100%; }\n`;
+
+    fs.writeFileSync(outFile, grid);
+    done();
+  });
+}
+
+/**
  * Склейка и обработка css файлов
  * @returns {*}
  */
@@ -303,6 +343,7 @@ function watchFiles() {
 
 const build = gulp.series(
   clean,
+  generateBg,
   gulp.parallel(
     SVGProcess,
     htmlProcess,

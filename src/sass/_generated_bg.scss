@@ -1,0 +1,58 @@
+.bg-collage-grid {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: 1fr;
+  z-index: 0;
+  pointer-events: none;
+}
+.bg-collage-grid .bg-tile-0 {
+  background-image: url('../img/photo_2025-12-21_23-21-20.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.95;
+}
+.bg-collage-grid .bg-tile-1 {
+  background-image: url('../img/photo_2025-12-21_23-21-41.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.95;
+}
+.bg-collage-grid .bg-tile-2 {
+  background-image: url('../img/photo_2025-12-21_23-21-44.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.95;
+}
+.bg-collage-grid .bg-tile-3 {
+  background-image: url('../img/photo_2025-12-21_23-21-46.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.95;
+}
+.bg-collage-grid .bg-tile-4 {
+  background-image: url('../img/photo_2025-12-21_23-27-33.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.95;
+}
+.bg-collage-grid .bg-tile-5 {
+  background-image: url('../img/photo_2025-12-21_23-45-41.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.95;
+}
+.bg-collage-grid > div {
+  width: 100%;
+  height: 100%;
+}

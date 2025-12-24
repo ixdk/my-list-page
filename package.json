@@ -5,7 +5,8 @@
 	"license": "MIT",
 	"scripts": {
 		"start": "gulp",
-		"build": "gulp build --production true"
+		"build": "gulp build --production true",
+		"deploy": "npm run build && gh-pages -d dist"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.4.3",

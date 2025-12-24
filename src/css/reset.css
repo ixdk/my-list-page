@@ -51,7 +51,6 @@ h6 {
   margin-bottom: 0.5rem;
 }
 p {
-  margin-top: 0;
   margin-bottom: 1rem;
 }
 abbr[data-original-title],
@@ -112,13 +111,12 @@ sup {
   top: -0.5em;
 }
 a {
-  color: #007bff;
+  color: #fff;
   text-decoration: none;
   background-color: transparent;
 }
 a:hover {
-  color: #0056b3;
-  text-decoration: underline;
+  color: #ebebeb;
 }
 a:not([href]):not([tabindex]) {
   color: inherit;
