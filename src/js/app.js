@@ -32,7 +32,6 @@ function initPhoneMask() {
 function initRegistrationRedirect() {
   const registrationUrl = 'https://ixdk.github.io/my-auth-page/';
 
-  // Обработчик для кнопки в guest-prompt
   const guestRedirectBtn = document.getElementById('show-register-form');
   if (guestRedirectBtn) {
     guestRedirectBtn.addEventListener('click', function(e) {
@@ -41,7 +40,6 @@ function initRegistrationRedirect() {
     });
   }
 
-  // Обработчик для кнопки в конце редактора
   document.addEventListener('click', function(e) {
     if (e.target && e.target.id === 'register-btn-bottom') {
       e.preventDefault();
@@ -66,14 +64,13 @@ function checkRegistrationSuccess() {
 
 /* ================= ОБНОВЛЕНИЕ UI ПОСЛЕ РЕГИСТРАЦИИ ================= */
 function updateUIAfterRegistration() {
-  // Скрываем guest prompt
   const guestPrompt = document.getElementById('guest-prompt');
   if (guestPrompt) {
     guestPrompt.style.display = 'none';
     guestPrompt.classList.add('hidden');
+    guestPrompt.remove();
   }
 
-  // Делаем редактор доступным для редактирования
   const editorWrap = document.querySelector('.editor-wrap');
   const editorBox = document.querySelector('.editor-box');
 
@@ -86,21 +83,17 @@ function updateUIAfterRegistration() {
     editorBox.setAttribute('contenteditable', 'true');
     editorBox.classList.add('editor-box--editable');
 
-    // Убираем кнопку регистрации в конце редактора
     const registerBtn = editorBox.querySelector('#register-btn-bottom');
     if (registerBtn) registerBtn.remove();
 
-    // Инициализируем редактор
     initEditor();
   }
 
-  // Показываем FAB кнопку
   const fab = document.querySelector('.fab');
   if (fab) {
     fab.classList.add('fab--visible', 'fab--active');
   }
 
-  // Обновляем заголовок
   const userName = localStorage.getItem('userName') || 'Мой список';
   const logo = document.querySelector('.header .logo');
   if (logo) {
@@ -117,77 +110,60 @@ function updateUIState() {
 
   const isRegistered = localStorage.getItem('userRegistered') === 'true';
 
-  // ВАЖНО: Редактор ВСЕГДА должен быть виден
   if (editorWrap) {
     editorWrap.style.display = 'flex';
     editorWrap.classList.add('editor-wrap--visible');
   }
 
   if (isRegistered) {
-    // После регистрации - скрываем guest prompt
     if (guestPrompt) {
       guestPrompt.style.display = 'none';
       guestPrompt.classList.add('hidden');
+      guestPrompt.remove();
     }
 
-    // Делаем редактор доступным для редактирования
     if (editorBox) {
       editorBox.setAttribute('contenteditable', 'true');
       editorBox.classList.add('editor-box--editable');
 
-      // Убираем кнопку регистрации в конце редактора
       const registerBtn = editorBox.querySelector('#register-btn-bottom');
       if (registerBtn) registerBtn.remove();
 
-      // Инициализируем редактор
       setTimeout(() => initEditor(), 100);
     }
 
-    // Показываем FAB кнопку
     if (fab) {
       fab.classList.add('fab--visible', 'fab--active');
     }
 
-    // Обновляем заголовок
     const userName = localStorage.getItem('userName') || 'Новогодний список';
     const logo = document.querySelector('.header .logo');
     if (logo) logo.textContent = userName;
 
-    // Добавляем дефолтный контент если редактор пустой
     if (editorBox && !editorBox.hasAttribute('data-initialized')) {
       editorBox.innerHTML = getDefaultEditorContent();
       editorBox.setAttribute('data-initialized', 'true');
-
-      // Добавляем кнопку регистрации в конец (будет видна только если не зарегистрирован)
-      if (!isRegistered) {
-        addRegisterButtonToEditor();
-      }
     }
   } else {
-    // До регистрации - показываем guest prompt, редактор тоже виден
     if (guestPrompt) {
       guestPrompt.style.display = 'block';
       guestPrompt.classList.remove('hidden');
     }
 
-    // Редактор виден, но заблокирован для редактирования
     if (editorBox) {
       editorBox.setAttribute('contenteditable', 'false');
       editorBox.classList.remove('editor-box--editable');
 
-      // Добавляем дефолтный контент если редактор пустой
       if (!editorBox.hasAttribute('data-initialized')) {
         editorBox.innerHTML = getDefaultEditorContent();
         editorBox.setAttribute('data-initialized', 'true');
       }
 
-      // Добавляем кнопку регистрации в конец редактора если её нет
       if (!editorBox.querySelector('#register-btn-bottom')) {
         addRegisterButtonToEditor();
       }
     }
 
-    // Скрываем FAB кнопку
     if (fab) {
       fab.classList.remove('fab--visible', 'fab--active');
     }
@@ -199,11 +175,9 @@ function addRegisterButtonToEditor() {
   const editorBox = document.querySelector('.editor-box');
   if (!editorBox) return;
 
-  // Удаляем старую кнопку если есть
   const oldBtn = editorBox.querySelector('#register-btn-bottom');
   if (oldBtn) oldBtn.remove();
 
-  // Создаем новую кнопку
   const registerBtn = document.createElement('div');
   registerBtn.id = 'register-btn-bottom';
   registerBtn.className = 'register-btn-bottom';
@@ -216,12 +190,11 @@ function addRegisterButtonToEditor() {
 
   editorBox.appendChild(registerBtn);
 
-  // Обработчик для новой кнопки
   document
     .getElementById('register-from-editor-bottom')
     ?.addEventListener('click', function(e) {
       e.preventDefault();
-      const registrationUrl = 'https://ваш-сайт-регистрации.com/register';
+      const registrationUrl = 'https://ixdk.github.io/my-auth-page/';
       window.open(registrationUrl, '_blank');
     });
 }
@@ -453,7 +426,6 @@ function initEditor() {
   const editorBox = document.querySelector('.editor-box');
   if (!editorBox) return;
 
-  // Проверяем, что пользователь зарегистрирован
   const isRegistered = localStorage.getItem('userRegistered') === 'true';
   if (!isRegistered) {
     editorBox.setAttribute('contenteditable', 'false');
@@ -461,24 +433,14 @@ function initEditor() {
     return;
   }
 
-  // Делаем редактор редактируемым
   editorBox.setAttribute('contenteditable', 'true');
   editorBox.classList.add('editor-box--editable');
 
-  // Убираем кнопку регистрации в конце редактора
   const registerBtn = editorBox.querySelector('#register-btn-bottom');
   if (registerBtn) registerBtn.remove();
 
-  // Обработчик ввода для автоматических точек
   editorBox.addEventListener('input', function(e) {
-    const selection = window.getSelection();
-    const range = selection.getRangeAt(0);
-    const node = range.startContainer;
-
-    if (
-      e.inputType === 'insertParagraph' ||
-      e.inputType === 'insertLineBreak'
-    ) {
+    if (e.inputType === 'insertParagraph' || e.inputType === 'insertLineBreak') {
       setTimeout(() => {
         const currentLine = getCurrentLine();
         if (currentLine && currentLine.textContent.trim() === '') {
@@ -488,18 +450,15 @@ function initEditor() {
     }
   });
 
-  // Обработчик клика для чекбоксов
   editorBox.addEventListener('click', function(e) {
     if (e.target.type === 'checkbox') {
       saveEditorState();
     }
   });
 
-  // Обработчики для инструментов редактора
   document.querySelectorAll('.editor-tool').forEach((tool) => {
     tool.addEventListener('click', function() {
       const action = this.getAttribute('data-action');
-
       switch (action) {
         case 'add-item':
           addNewItem();
@@ -514,7 +473,6 @@ function initEditor() {
     });
   });
 
-  // Функция для добавления нового пункта
   function addNewItem() {
     const isRegistered = localStorage.getItem('userRegistered') === 'true';
     if (!isRegistered) {
@@ -540,7 +498,6 @@ function initEditor() {
     setTimeout(() => {
       const textSpan = newItem.querySelector('.item-text');
       textSpan.focus();
-
       const range = document.createRange();
       range.selectNodeContents(textSpan);
       const selection = window.getSelection();
@@ -549,29 +506,22 @@ function initEditor() {
     }, 10);
   }
 
-  // Функция для очистки выполненных пунктов
   function clearDoneItems() {
     if (!confirm('Удалить все отмеченные пункты?')) return;
 
     const editorBox = document.querySelector('.editor-box');
-    const doneItems = editorBox.querySelectorAll(
-      '[data-type="item"] input:checked',
-    );
+    const doneItems = editorBox.querySelectorAll('[data-type="item"] input:checked');
 
     doneItems.forEach((checkbox) => {
       const item = checkbox.closest('[data-type="item"]');
-      if (item) {
-        item.remove();
-      }
+      if (item) item.remove();
     });
 
     saveEditorState();
   }
 
-  // Функция для печати списка
   function printList() {
     const originalContent = document.querySelector('.editor-box').innerHTML;
-
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
       <!DOCTYPE html>
@@ -579,48 +529,14 @@ function initEditor() {
       <head>
         <title>Новогодний список - Печать</title>
         <style>
-          body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
-          }
-          .print-header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #c77a7a;
-            padding-bottom: 10px;
-          }
-          .print-header h1 {
-            color: #c77a7a;
-            margin: 0;
-          }
-          .category {
-            font-weight: bold;
-            color: #c77a7a;
-            margin-top: 25px;
-            margin-bottom: 10px;
-            font-size: 1.2em;
-          }
-          .item {
-            margin: 5px 0;
-            padding-left: 20px;
-            position: relative;
-          }
-          .item::before {
-            content: "•";
-            position: absolute;
-            left: 0;
-            color: #c77a7a;
-          }
-          .item.checked {
-            text-decoration: line-through;
-            color: #888;
-          }
-          @media print {
-            body { padding: 0; }
-            .no-print { display: none; }
-          }
+          body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+          .print-header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #c77a7a; padding-bottom: 10px; }
+          .print-header h1 { color: #c77a7a; margin: 0; }
+          .category { font-weight: bold; color: #c77a7a; margin-top: 25px; margin-bottom: 10px; font-size: 1.2em; }
+          .item { margin: 5px 0; padding-left: 20px; position: relative; }
+          .item::before { content: "•"; position: absolute; left: 0; color: #c77a7a; }
+          .item.checked { text-decoration: line-through; color: #888; }
+          @media print { body { padding: 0; } .no-print { display: none; } }
         </style>
       </head>
       <body>
@@ -638,15 +554,11 @@ function initEditor() {
           const parser = new DOMParser();
           const doc = parser.parseFromString(content, 'text/html');
           const printContent = document.getElementById('print-content');
-          
-          let currentCategory = '';
           let html = '';
-          
           doc.body.childNodes.forEach(node => {
             if (node.nodeType === 1) {
               if (node.getAttribute('data-type') === 'category') {
-                currentCategory = node.textContent;
-                html += '<div class="category">' + currentCategory + '</div>';
+                html += '<div class="category">' + node.textContent + '</div>';
               } else if (node.getAttribute('data-type') === 'item') {
                 const isChecked = node.querySelector('input')?.checked;
                 const text = node.querySelector('.item-text')?.textContent || node.textContent;
@@ -657,32 +569,25 @@ function initEditor() {
               }
             }
           });
-          
           printContent.innerHTML = html;
         </script>
       </body>
       </html>
     `);
-
     printWindow.document.close();
   }
 
-  // Функция для получения текущей строки
   function getCurrentLine() {
     const selection = window.getSelection();
     if (!selection.rangeCount) return null;
-
     const range = selection.getRangeAt(0);
     let node = range.startContainer;
-
     while (node && node.nodeType === 3) {
       node = node.parentNode;
     }
-
     return node;
   }
 
-  // Функция для сохранения состояния редактора
   function saveEditorState() {
     const editorBox = document.querySelector('.editor-box');
     if (!editorBox) return;
@@ -691,15 +596,12 @@ function initEditor() {
 
     const checkboxes = editorBox.querySelectorAll('input[type="checkbox"]');
     const checkboxStates = {};
-
     checkboxes.forEach((checkbox, index) => {
       checkboxStates[index] = checkbox.checked;
     });
-
     localStorage.setItem('checkboxStates', JSON.stringify(checkboxStates));
   }
 
-  // Функция для загрузки состояния редактора
   function loadEditorState() {
     const editorBox = document.querySelector('.editor-box');
     if (!editorBox) return;
@@ -713,7 +615,6 @@ function initEditor() {
       if (savedStates) {
         const checkboxStates = JSON.parse(savedStates);
         const checkboxes = editorBox.querySelectorAll('input[type="checkbox"]');
-
         checkboxes.forEach((checkbox, index) => {
           if (checkboxStates[index] !== undefined) {
             checkbox.checked = checkboxStates[index];
@@ -723,13 +624,9 @@ function initEditor() {
     }
   }
 
-  // Автосохранение при изменении
   editorBox.addEventListener('input', debounce(saveEditorState, 1000));
-
-  // Загружаем сохраненное состояние
   loadEditorState();
 
-  // Функция для дебаунса
   function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
