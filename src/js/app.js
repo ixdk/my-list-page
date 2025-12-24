@@ -30,7 +30,7 @@ function initPhoneMask() {
 
 /* ================= РЕДИРЕКТ НА РЕГИСТРАЦИЮ ================= */
 function initRegistrationRedirect() {
-  const registrationUrl = 'https://ваш-сайт-регистрации.com/register';
+  const registrationUrl = 'https://ixdk.github.io/my-auth-page/';
 
   // Обработчик для кнопки в guest-prompt
   const guestRedirectBtn = document.getElementById('show-register-form');
