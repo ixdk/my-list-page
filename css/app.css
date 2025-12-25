@@ -669,7 +669,7 @@ body {
 .editor-wrap {
   display: none;
   margin-top: 0;
-  position: relative;
+  position: column;
 }
 
 .editor-wrap--visible {

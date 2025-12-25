@@ -651,6 +651,11 @@ var AppStateManager = /*#__PURE__*/ (function() {
         var editorBox = document.querySelector('.editor-box');
         var fab = document.querySelector('.fab');
         var syncStatus = document.querySelector('.sync-status');
+        editorBox
+          .querySelectorAll('input[type="checkbox"]')
+          .forEach(function(cb) {
+            cb.disabled = !isReg;
+          });
 
         // Обновляем guest prompt
         if (guestPrompt) {
@@ -670,7 +675,8 @@ var AppStateManager = /*#__PURE__*/ (function() {
 
         // Обновляем редактор
         if (editorWrap) {
-          editorWrap.style.display = isReg ? 'flex' : 'none';
+          editorWrap.style.display = 'flex';
+          editorWrap.style.flexDirection = 'column';
         }
         if (editorBox) {
           if (isReg) {
@@ -1681,6 +1687,11 @@ document.addEventListener('DOMContentLoaded', function() {
       setTimeout(initCardTilt, 100);
     }, 300);
   }
+  var editorBox = document.querySelector('.editor-box');
+  if (editorBox) {
+    loadEditorState(); // ← важно
+  }
+
   var images = document.querySelectorAll('img');
   var loadedImages = 0;
   var totalImages = images.length;
