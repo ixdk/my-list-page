@@ -462,12 +462,12 @@ function _asyncToGenerator(fn) {
   };
 }
 /* ================= СИНХРОНИЗАЦИЯ ЧЕРЕЗ JSONBIN.IO ================= */
-// Твой JSONBin.io API ключ и Bin ID
+// ВСТАВЬ СЮДА СВОИ КЛЮЧИ ИЗ JSONBIN.IO
 var JSONBIN_API_KEY =
   '$2a$10$qPshXxnB1OT/D4pxL0ZJCuq/278SoRBUSx/vPRwju.BlafIcpckIO';
 var JSONBIN_BIN_ID = '694d8f77ae596e708fb0b164';
 var JSONBIN_URL = 'https://api.jsonbin.io/v3/b/694d8f77ae596e708fb0b164'.concat(
-  JSONBIN_BIN_BIN_ID,
+  JSONBIN_BIN_ID,
 );
 var syncInterval = null;
 var lastServerHash = '';
@@ -782,7 +782,7 @@ function autoSave() {
   }
   saveTimeout = setTimeout(function() {
     saveToServer();
-  }, 2000); // Сохраняем через 2 секунды после последнего изменения
+  }, 2000);
 }
 
 // Запуск автоматической синхронизации
@@ -837,7 +837,7 @@ function startAutoSync() {
 
   // Сохраняем при закрытии страницы
   window.addEventListener('beforeunload', function() {
-    saveToServer(true); // Принудительное сохранение
+    saveToServer(true);
   });
 }
 
@@ -1006,7 +1006,7 @@ function updateUIState() {
       if (registerBtn) registerBtn.remove();
       setTimeout(function() {
         initEditor();
-        startAutoSync(); // Запускаем синхронизацию для зарегистрированных
+        startAutoSync();
       }, 100);
     }
     if (fab) {
@@ -1205,9 +1205,6 @@ function initEditor() {
 function loadEditorState() {
   var editorBox = document.querySelector('.editor-box');
   if (!editorBox) return;
-
-  // Сначала пробуем загрузить с сервера (но это делается в startAutoSync)
-  // Здесь загружаем только из localStorage как fallback
   var savedContent = localStorage.getItem('editorContent');
   var savedStates = localStorage.getItem('checkboxStates');
   if (savedContent && savedContent !== '<div><br></div>') {
