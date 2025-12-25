@@ -1230,3 +1230,49 @@ html {
 .editor-box {
   scrollbar-color: #c77a7a transparent;
 }
+
+/* Стили статуса синхронизации */
+#sync-status {
+  text-align: center;
+  font-size: 12px;
+  color: #666;
+  margin-top: -10px;
+  margin-bottom: 10px;
+}
+
+#status-text {
+  font-weight: normal;
+}
+
+.online {
+  color: #28a745;
+}
+
+.offline {
+  color: #dc3545;
+}
+
+/* Анимация для новых элементов */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+li {
+  animation: fadeIn 0.3s ease;
+}
+
+/* Стиль для выполненных пунктов */
+.completed {
+  opacity: 0.6;
+}
+
+.completed span {
+  text-decoration: line-through;
+  color: #888;
+}

@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>On.Time Notes</title>
@@ -20,6 +23,9 @@
     <header class="header">
       <div class="container header__inner">
         <h1 class="logo">Новогодний Список</h1>
+        <p id="sync-status" style="text-align: center; font-size: 12px; color: #666; margin-top: -10px; margin-bottom: 10px;">
+        <span id="status-text">Загрузка...</span> • <span id="last-update"></span>
+        </p>
 
         <nav class="header__nav">
           <ul class="header__menu">
@@ -59,7 +65,7 @@
                   <p class="guest-text">
                     Зарегистрируйся, чтобы добавлять блюда, делиться списком и все.
                   </p>
-                  <a href="https://ixdk.github.io/my-auth-page/" target="_blank" class="btn btn-primary">
+                  <a href="https://my-auth-page-crwj.vercel.app/" target="_blank" class="btn btn-primary">
                     Пройти регистрацию
                   </a>
                 </div>

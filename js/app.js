@@ -1,3 +1,876 @@
+function _typeof(o) {
+  '@babel/helpers - typeof';
+  return (
+    (_typeof =
+      'function' == typeof Symbol && 'symbol' == typeof Symbol.iterator
+        ? function(o) {
+            return typeof o;
+          }
+        : function(o) {
+            return o &&
+              'function' == typeof Symbol &&
+              o.constructor === Symbol &&
+              o !== Symbol.prototype
+              ? 'symbol'
+              : typeof o;
+          }),
+    _typeof(o)
+  );
+}
+function _regeneratorRuntime() {
+  'use strict';
+  /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() {
+    return e;
+  };
+  var t,
+    e = {},
+    r = Object.prototype,
+    n = r.hasOwnProperty,
+    o =
+      Object.defineProperty ||
+      function(t, e, r) {
+        t[e] = r.value;
+      },
+    i = 'function' == typeof Symbol ? Symbol : {},
+    a = i.iterator || '@@iterator',
+    c = i.asyncIterator || '@@asyncIterator',
+    u = i.toStringTag || '@@toStringTag';
+  function define(t, e, r) {
+    return (
+      Object.defineProperty(t, e, {
+        value: r,
+        enumerable: !0,
+        configurable: !0,
+        writable: !0,
+      }),
+      t[e]
+    );
+  }
+  try {
+    define({}, '');
+  } catch (t) {
+    define = function define(t, e, r) {
+      return (t[e] = r);
+    };
+  }
+  function wrap(t, e, r, n) {
+    var i = e && e.prototype instanceof Generator ? e : Generator,
+      a = Object.create(i.prototype),
+      c = new Context(n || []);
+    return o(a, '_invoke', { value: makeInvokeMethod(t, r, c) }), a;
+  }
+  function tryCatch(t, e, r) {
+    try {
+      return { type: 'normal', arg: t.call(e, r) };
+    } catch (t) {
+      return { type: 'throw', arg: t };
+    }
+  }
+  e.wrap = wrap;
+  var h = 'suspendedStart',
+    l = 'suspendedYield',
+    f = 'executing',
+    s = 'completed',
+    y = {};
+  function Generator() {}
+  function GeneratorFunction() {}
+  function GeneratorFunctionPrototype() {}
+  var p = {};
+  define(p, a, function() {
+    return this;
+  });
+  var d = Object.getPrototypeOf,
+    v = d && d(d(values([])));
+  v && v !== r && n.call(v, a) && (p = v);
+  var g = (GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(
+    p,
+  ));
+  function defineIteratorMethods(t) {
+    ['next', 'throw', 'return'].forEach(function(e) {
+      define(t, e, function(t) {
+        return this._invoke(e, t);
+      });
+    });
+  }
+  function AsyncIterator(t, e) {
+    function invoke(r, o, i, a) {
+      var c = tryCatch(t[r], t, o);
+      if ('throw' !== c.type) {
+        var u = c.arg,
+          h = u.value;
+        return h && 'object' == _typeof(h) && n.call(h, '__await')
+          ? e.resolve(h.__await).then(
+              function(t) {
+                invoke('next', t, i, a);
+              },
+              function(t) {
+                invoke('throw', t, i, a);
+              },
+            )
+          : e.resolve(h).then(
+              function(t) {
+                (u.value = t), i(u);
+              },
+              function(t) {
+                return invoke('throw', t, i, a);
+              },
+            );
+      }
+      a(c.arg);
+    }
+    var r;
+    o(this, '_invoke', {
+      value: function value(t, n) {
+        function callInvokeWithMethodAndArg() {
+          return new e(function(e, r) {
+            invoke(t, n, e, r);
+          });
+        }
+        return (r = r
+          ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg)
+          : callInvokeWithMethodAndArg());
+      },
+    });
+  }
+  function makeInvokeMethod(e, r, n) {
+    var o = h;
+    return function(i, a) {
+      if (o === f) throw new Error('Generator is already running');
+      if (o === s) {
+        if ('throw' === i) throw a;
+        return { value: t, done: !0 };
+      }
+      for (n.method = i, n.arg = a; ; ) {
+        var c = n.delegate;
+        if (c) {
+          var u = maybeInvokeDelegate(c, n);
+          if (u) {
+            if (u === y) continue;
+            return u;
+          }
+        }
+        if ('next' === n.method) n.sent = n._sent = n.arg;
+        else if ('throw' === n.method) {
+          if (o === h) throw ((o = s), n.arg);
+          n.dispatchException(n.arg);
+        } else 'return' === n.method && n.abrupt('return', n.arg);
+        o = f;
+        var p = tryCatch(e, r, n);
+        if ('normal' === p.type) {
+          if (((o = n.done ? s : l), p.arg === y)) continue;
+          return { value: p.arg, done: n.done };
+        }
+        'throw' === p.type && ((o = s), (n.method = 'throw'), (n.arg = p.arg));
+      }
+    };
+  }
+  function maybeInvokeDelegate(e, r) {
+    var n = r.method,
+      o = e.iterator[n];
+    if (o === t)
+      return (
+        (r.delegate = null),
+        ('throw' === n &&
+          e.iterator.return &&
+          ((r.method = 'return'),
+          (r.arg = t),
+          maybeInvokeDelegate(e, r),
+          'throw' === r.method)) ||
+          ('return' !== n &&
+            ((r.method = 'throw'),
+            (r.arg = new TypeError(
+              "The iterator does not provide a '" + n + "' method",
+            )))),
+        y
+      );
+    var i = tryCatch(o, e.iterator, r.arg);
+    if ('throw' === i.type)
+      return (r.method = 'throw'), (r.arg = i.arg), (r.delegate = null), y;
+    var a = i.arg;
+    return a
+      ? a.done
+        ? ((r[e.resultName] = a.value),
+          (r.next = e.nextLoc),
+          'return' !== r.method && ((r.method = 'next'), (r.arg = t)),
+          (r.delegate = null),
+          y)
+        : a
+      : ((r.method = 'throw'),
+        (r.arg = new TypeError('iterator result is not an object')),
+        (r.delegate = null),
+        y);
+  }
+  function pushTryEntry(t) {
+    var e = { tryLoc: t[0] };
+    1 in t && (e.catchLoc = t[1]),
+      2 in t && ((e.finallyLoc = t[2]), (e.afterLoc = t[3])),
+      this.tryEntries.push(e);
+  }
+  function resetTryEntry(t) {
+    var e = t.completion || {};
+    (e.type = 'normal'), delete e.arg, (t.completion = e);
+  }
+  function Context(t) {
+    (this.tryEntries = [{ tryLoc: 'root' }]),
+      t.forEach(pushTryEntry, this),
+      this.reset(!0);
+  }
+  function values(e) {
+    if (e || '' === e) {
+      var r = e[a];
+      if (r) return r.call(e);
+      if ('function' == typeof e.next) return e;
+      if (!isNaN(e.length)) {
+        var o = -1,
+          i = function next() {
+            for (; ++o < e.length; )
+              if (n.call(e, o))
+                return (next.value = e[o]), (next.done = !1), next;
+            return (next.value = t), (next.done = !0), next;
+          };
+        return (i.next = i);
+      }
+    }
+    throw new TypeError(_typeof(e) + ' is not iterable');
+  }
+  return (
+    (GeneratorFunction.prototype = GeneratorFunctionPrototype),
+    o(g, 'constructor', {
+      value: GeneratorFunctionPrototype,
+      configurable: !0,
+    }),
+    o(GeneratorFunctionPrototype, 'constructor', {
+      value: GeneratorFunction,
+      configurable: !0,
+    }),
+    (GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, 'GeneratorFunction')),
+    (e.isGeneratorFunction = function(t) {
+      var e = 'function' == typeof t && t.constructor;
+      return (
+        !!e &&
+        (e === GeneratorFunction ||
+          'GeneratorFunction' === (e.displayName || e.name))
+      );
+    }),
+    (e.mark = function(t) {
+      return (
+        Object.setPrototypeOf
+          ? Object.setPrototypeOf(t, GeneratorFunctionPrototype)
+          : ((t.__proto__ = GeneratorFunctionPrototype),
+            define(t, u, 'GeneratorFunction')),
+        (t.prototype = Object.create(g)),
+        t
+      );
+    }),
+    (e.awrap = function(t) {
+      return { __await: t };
+    }),
+    defineIteratorMethods(AsyncIterator.prototype),
+    define(AsyncIterator.prototype, c, function() {
+      return this;
+    }),
+    (e.AsyncIterator = AsyncIterator),
+    (e.async = function(t, r, n, o, i) {
+      void 0 === i && (i = Promise);
+      var a = new AsyncIterator(wrap(t, r, n, o), i);
+      return e.isGeneratorFunction(r)
+        ? a
+        : a.next().then(function(t) {
+            return t.done ? t.value : a.next();
+          });
+    }),
+    defineIteratorMethods(g),
+    define(g, u, 'Generator'),
+    define(g, a, function() {
+      return this;
+    }),
+    define(g, 'toString', function() {
+      return '[object Generator]';
+    }),
+    (e.keys = function(t) {
+      var e = Object(t),
+        r = [];
+      for (var n in e) r.push(n);
+      return (
+        r.reverse(),
+        function next() {
+          for (; r.length; ) {
+            var t = r.pop();
+            if (t in e) return (next.value = t), (next.done = !1), next;
+          }
+          return (next.done = !0), next;
+        }
+      );
+    }),
+    (e.values = values),
+    (Context.prototype = {
+      constructor: Context,
+      reset: function reset(e) {
+        if (
+          ((this.prev = 0),
+          (this.next = 0),
+          (this.sent = this._sent = t),
+          (this.done = !1),
+          (this.delegate = null),
+          (this.method = 'next'),
+          (this.arg = t),
+          this.tryEntries.forEach(resetTryEntry),
+          !e)
+        )
+          for (var r in this)
+            't' === r.charAt(0) &&
+              n.call(this, r) &&
+              !isNaN(+r.slice(1)) &&
+              (this[r] = t);
+      },
+      stop: function stop() {
+        this.done = !0;
+        var t = this.tryEntries[0].completion;
+        if ('throw' === t.type) throw t.arg;
+        return this.rval;
+      },
+      dispatchException: function dispatchException(e) {
+        if (this.done) throw e;
+        var r = this;
+        function handle(n, o) {
+          return (
+            (a.type = 'throw'),
+            (a.arg = e),
+            (r.next = n),
+            o && ((r.method = 'next'), (r.arg = t)),
+            !!o
+          );
+        }
+        for (var o = this.tryEntries.length - 1; o >= 0; --o) {
+          var i = this.tryEntries[o],
+            a = i.completion;
+          if ('root' === i.tryLoc) return handle('end');
+          if (i.tryLoc <= this.prev) {
+            var c = n.call(i, 'catchLoc'),
+              u = n.call(i, 'finallyLoc');
+            if (c && u) {
+              if (this.prev < i.catchLoc) return handle(i.catchLoc, !0);
+              if (this.prev < i.finallyLoc) return handle(i.finallyLoc);
+            } else if (c) {
+              if (this.prev < i.catchLoc) return handle(i.catchLoc, !0);
+            } else {
+              if (!u) throw new Error('try statement without catch or finally');
+              if (this.prev < i.finallyLoc) return handle(i.finallyLoc);
+            }
+          }
+        }
+      },
+      abrupt: function abrupt(t, e) {
+        for (var r = this.tryEntries.length - 1; r >= 0; --r) {
+          var o = this.tryEntries[r];
+          if (
+            o.tryLoc <= this.prev &&
+            n.call(o, 'finallyLoc') &&
+            this.prev < o.finallyLoc
+          ) {
+            var i = o;
+            break;
+          }
+        }
+        i &&
+          ('break' === t || 'continue' === t) &&
+          i.tryLoc <= e &&
+          e <= i.finallyLoc &&
+          (i = null);
+        var a = i ? i.completion : {};
+        return (
+          (a.type = t),
+          (a.arg = e),
+          i
+            ? ((this.method = 'next'), (this.next = i.finallyLoc), y)
+            : this.complete(a)
+        );
+      },
+      complete: function complete(t, e) {
+        if ('throw' === t.type) throw t.arg;
+        return (
+          'break' === t.type || 'continue' === t.type
+            ? (this.next = t.arg)
+            : 'return' === t.type
+            ? ((this.rval = this.arg = t.arg),
+              (this.method = 'return'),
+              (this.next = 'end'))
+            : 'normal' === t.type && e && (this.next = e),
+          y
+        );
+      },
+      finish: function finish(t) {
+        for (var e = this.tryEntries.length - 1; e >= 0; --e) {
+          var r = this.tryEntries[e];
+          if (r.finallyLoc === t)
+            return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y;
+        }
+      },
+      catch: function _catch(t) {
+        for (var e = this.tryEntries.length - 1; e >= 0; --e) {
+          var r = this.tryEntries[e];
+          if (r.tryLoc === t) {
+            var n = r.completion;
+            if ('throw' === n.type) {
+              var o = n.arg;
+              resetTryEntry(r);
+            }
+            return o;
+          }
+        }
+        throw new Error('illegal catch attempt');
+      },
+      delegateYield: function delegateYield(e, r, n) {
+        return (
+          (this.delegate = { iterator: values(e), resultName: r, nextLoc: n }),
+          'next' === this.method && (this.arg = t),
+          y
+        );
+      },
+    }),
+    e
+  );
+}
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+  try {
+    var info = gen[key](arg);
+    var value = info.value;
+  } catch (error) {
+    reject(error);
+    return;
+  }
+  if (info.done) {
+    resolve(value);
+  } else {
+    Promise.resolve(value).then(_next, _throw);
+  }
+}
+function _asyncToGenerator(fn) {
+  return function() {
+    var self = this,
+      args = arguments;
+    return new Promise(function(resolve, reject) {
+      var gen = fn.apply(self, args);
+      function _next(value) {
+        asyncGeneratorStep(gen, resolve, reject, _next, _throw, 'next', value);
+      }
+      function _throw(err) {
+        asyncGeneratorStep(gen, resolve, reject, _next, _throw, 'throw', err);
+      }
+      _next(undefined);
+    });
+  };
+}
+/* ================= СИНХРОНИЗАЦИЯ ЧЕРЕЗ JSONBIN.IO ================= */
+// Твой JSONBin.io API ключ и Bin ID
+var JSONBIN_API_KEY =
+  '$2a$10$qPshXxnB1OT/D4pxL0ZJCuq/278SoRBUSx/vPRwju.BlafIcpckIO';
+var JSONBIN_BIN_ID = '694d8f77ae596e708fb0b164';
+var JSONBIN_URL = 'https://api.jsonbin.io/v3/b/694d8f77ae596e708fb0b164'.concat(
+  JSONBIN_BIN_BIN_ID,
+);
+var syncInterval = null;
+var lastServerHash = '';
+var isSyncing = false;
+
+// Функция обновления статуса синхронизации
+function updateSyncStatus(text, isOnline) {
+  var statusText = document.getElementById('status-text');
+  if (statusText) {
+    statusText.textContent = text;
+    statusText.className = isOnline ? 'online' : 'offline';
+  }
+}
+
+// Функция обновления времени последней синхронизации
+function updateLastSync() {
+  var now = new Date();
+  var timeString = now.toLocaleTimeString('ru-RU', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+  var lastUpdate = document.getElementById('last-update');
+  if (lastUpdate) {
+    lastUpdate.textContent = timeString;
+  }
+}
+
+// Генерация хеша содержимого для сравнения
+function generateContentHash(content) {
+  var hash = 0;
+  for (var i = 0; i < content.length; i++) {
+    var char = content.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash;
+  }
+  return hash.toString(36);
+}
+
+// Получение текущего состояния редактора
+function getEditorState() {
+  var editorBox = document.querySelector('.editor-box');
+  if (!editorBox) return null;
+  var html = editorBox.innerHTML;
+  var checkboxes = {};
+  editorBox
+    .querySelectorAll('input[type="checkbox"]')
+    .forEach(function(checkbox, index) {
+      checkboxes[index] = checkbox.checked;
+    });
+  return {
+    html: html,
+    checkboxes: checkboxes,
+    lastUpdated: Date.now(),
+    user: localStorage.getItem('userName') || 'Гость',
+  };
+}
+
+// Загрузка данных с сервера
+function loadFromServer() {
+  return _loadFromServer.apply(this, arguments);
+} // Сохранение данных на сервер
+function _loadFromServer() {
+  _loadFromServer = _asyncToGenerator(
+    /*#__PURE__*/ _regeneratorRuntime().mark(function _callee() {
+      var response,
+        data,
+        editorBox,
+        currentHash,
+        serverHash,
+        isEditorActive,
+        isUserEditing,
+        scrollTop,
+        checkboxes;
+      return _regeneratorRuntime().wrap(
+        function _callee$(_context) {
+          while (1)
+            switch ((_context.prev = _context.next)) {
+              case 0:
+                if (!(localStorage.getItem('userRegistered') !== 'true')) {
+                  _context.next = 2;
+                  break;
+                }
+                return _context.abrupt('return', null);
+              case 2:
+                _context.prev = 2;
+                console.log('Загрузка данных с JSONBin.io...');
+                _context.next = 6;
+                return fetch(JSONBIN_URL, {
+                  headers: {
+                    'X-Master-Key': JSONBIN_API_KEY,
+                    'X-Bin-Meta': 'false',
+                  },
+                });
+              case 6:
+                response = _context.sent;
+                if (response.ok) {
+                  _context.next = 9;
+                  break;
+                }
+                throw new Error('HTTP '.concat(response.status));
+              case 9:
+                _context.next = 11;
+                return response.json();
+              case 11:
+                data = _context.sent;
+                if (!(data.html && data.html !== '<div><br></div>')) {
+                  _context.next = 35;
+                  break;
+                }
+                editorBox = document.querySelector('.editor-box');
+                if (editorBox) {
+                  _context.next = 16;
+                  break;
+                }
+                return _context.abrupt('return', false);
+              case 16:
+                // Проверяем, не совпадают ли данные с текущими
+                currentHash = generateContentHash(editorBox.innerHTML);
+                serverHash = generateContentHash(data.html);
+                if (!(serverHash !== lastServerHash)) {
+                  _context.next = 35;
+                  break;
+                }
+                lastServerHash = serverHash;
+
+                // Если редактор не в фокусе или пользователь не редактирует
+                isEditorActive = editorBox.contains(document.activeElement);
+                isUserEditing =
+                  editorBox.getAttribute('data-editing') === 'true';
+                if (!(!isEditorActive && !isUserEditing)) {
+                  _context.next = 34;
+                  break;
+                }
+                console.log('Обновляем редактор с серверными данными');
+
+                // Сохраняем текущую позицию скролла
+                scrollTop = editorBox.scrollTop;
+                editorBox.innerHTML = data.html;
+
+                // Восстанавливаем состояния чекбоксов
+                if (data.checkboxes) {
+                  checkboxes = editorBox.querySelectorAll(
+                    'input[type="checkbox"]',
+                  );
+                  checkboxes.forEach(function(checkbox, index) {
+                    if (data.checkboxes[index] !== undefined) {
+                      checkbox.checked = data.checkboxes[index];
+                    }
+                  });
+                }
+
+                // Восстанавливаем позицию скролла
+                editorBox.scrollTop = scrollTop;
+                updateSyncStatus('Синхронизировано', true);
+                updateLastSync();
+                showNotification('Список обновлён', 'success');
+                return _context.abrupt('return', true);
+              case 34:
+                console.log('Пользователь редактирует, пропускаем обновление');
+              case 35:
+                updateSyncStatus('Синхронизировано', true);
+                updateLastSync();
+                return _context.abrupt('return', false);
+              case 40:
+                _context.prev = 40;
+                _context.t0 = _context['catch'](2);
+                console.log('JSONBin.io недоступен:', _context.t0.message);
+                updateSyncStatus('Только локально', false);
+                return _context.abrupt('return', null);
+              case 45:
+              case 'end':
+                return _context.stop();
+            }
+        },
+        _callee,
+        null,
+        [[2, 40]],
+      );
+    }),
+  );
+  return _loadFromServer.apply(this, arguments);
+}
+function saveToServer() {
+  return _saveToServer.apply(this, arguments);
+} // Автоматическое сохранение с задержкой
+function _saveToServer() {
+  _saveToServer = _asyncToGenerator(
+    /*#__PURE__*/ _regeneratorRuntime().mark(function _callee2() {
+      var force,
+        editorBox,
+        state,
+        response,
+        result,
+        _args2 = arguments;
+      return _regeneratorRuntime().wrap(
+        function _callee2$(_context2) {
+          while (1)
+            switch ((_context2.prev = _context2.next)) {
+              case 0:
+                force =
+                  _args2.length > 0 && _args2[0] !== undefined
+                    ? _args2[0]
+                    : false;
+                if (!(localStorage.getItem('userRegistered') !== 'true')) {
+                  _context2.next = 3;
+                  break;
+                }
+                return _context2.abrupt('return');
+              case 3:
+                if (!(isSyncing && !force)) {
+                  _context2.next = 6;
+                  break;
+                }
+                console.log('Синхронизация уже выполняется, пропускаем');
+                return _context2.abrupt('return');
+              case 6:
+                isSyncing = true;
+                editorBox = document.querySelector('.editor-box');
+                if (editorBox) {
+                  _context2.next = 11;
+                  break;
+                }
+                isSyncing = false;
+                return _context2.abrupt('return');
+              case 11:
+                state = getEditorState();
+                if (state) {
+                  _context2.next = 15;
+                  break;
+                }
+                isSyncing = false;
+                return _context2.abrupt('return');
+              case 15:
+                _context2.prev = 15;
+                console.log('Сохранение на JSONBin.io...');
+                _context2.next = 19;
+                return fetch(JSONBIN_URL, {
+                  method: 'PUT',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': JSONBIN_API_KEY,
+                  },
+                  body: JSON.stringify(state),
+                });
+              case 19:
+                response = _context2.sent;
+                if (!response.ok) {
+                  _context2.next = 33;
+                  break;
+                }
+                _context2.next = 23;
+                return response.json();
+              case 23:
+                result = _context2.sent;
+                lastServerHash = generateContentHash(state.html);
+                updateSyncStatus('Сохранено в облаке', true);
+                updateLastSync();
+
+                // Также сохраняем локально как backup
+                localStorage.setItem('editorContent', state.html);
+                localStorage.setItem(
+                  'checkboxStates',
+                  JSON.stringify(state.checkboxes),
+                );
+                console.log('Сохранено успешно');
+                if (force) {
+                  showNotification('Сохранено в облаке', 'success');
+                }
+                _context2.next = 34;
+                break;
+              case 33:
+                throw new Error('HTTP '.concat(response.status));
+              case 34:
+                _context2.next = 43;
+                break;
+              case 36:
+                _context2.prev = 36;
+                _context2.t0 = _context2['catch'](15);
+                console.error('Ошибка сохранения:', _context2.t0);
+
+                // При ошибке сохраняем только локально
+                localStorage.setItem('editorContent', state.html);
+                localStorage.setItem(
+                  'checkboxStates',
+                  JSON.stringify(state.checkboxes),
+                );
+                updateSyncStatus('Только локально', false);
+                if (force) {
+                  showNotification('Ошибка синхронизации', 'error');
+                }
+              case 43:
+                _context2.prev = 43;
+                isSyncing = false;
+                return _context2.finish(43);
+              case 46:
+              case 'end':
+                return _context2.stop();
+            }
+        },
+        _callee2,
+        null,
+        [[15, 36, 43, 46]],
+      );
+    }),
+  );
+  return _saveToServer.apply(this, arguments);
+}
+var saveTimeout = null;
+function autoSave() {
+  if (saveTimeout) {
+    clearTimeout(saveTimeout);
+  }
+  saveTimeout = setTimeout(function() {
+    saveToServer();
+  }, 2000); // Сохраняем через 2 секунды после последнего изменения
+}
+
+// Запуск автоматической синхронизации
+function startAutoSync() {
+  // Останавливаем предыдущий интервал если есть
+  if (syncInterval) {
+    clearInterval(syncInterval);
+  }
+
+  // Загружаем с сервера сразу при старте
+  setTimeout(function() {
+    loadFromServer().then(function(success) {
+      if (success === null) {
+        // Сервер недоступен, загружаем из localStorage
+        loadEditorState();
+      }
+    });
+  }, 1000);
+
+  // Периодическая синхронизация каждые 20 секунд
+  syncInterval = setInterval(function() {
+    loadFromServer();
+  }, 20000);
+
+  // Настройка отслеживания изменений в редакторе
+  var editorBox = document.querySelector('.editor-box');
+  if (editorBox) {
+    // Помечаем что пользователь начал редактирование
+    editorBox.addEventListener('focus', function() {
+      editorBox.setAttribute('data-editing', 'true');
+    });
+
+    // Помечаем что пользователь закончил редактирование
+    editorBox.addEventListener('blur', function() {
+      setTimeout(function() {
+        editorBox.setAttribute('data-editing', 'false');
+      }, 1000);
+    });
+
+    // Отслеживание изменений с автосохранением
+    editorBox.addEventListener('input', function() {
+      autoSave();
+    });
+
+    // Сохраняем при изменении чекбоксов
+    editorBox.addEventListener('change', function(e) {
+      if (e.target.type === 'checkbox') {
+        autoSave();
+      }
+    });
+  }
+
+  // Сохраняем при закрытии страницы
+  window.addEventListener('beforeunload', function() {
+    saveToServer(true); // Принудительное сохранение
+  });
+}
+
+// Остановка синхронизации
+function stopAutoSync() {
+  if (syncInterval) {
+    clearInterval(syncInterval);
+    syncInterval = null;
+  }
+}
+
+// Ручная синхронизация
+function manualSync() {
+  var syncButton = document.querySelector('[data-action="sync-now"]');
+  if (syncButton) {
+    syncButton.classList.add('syncing');
+    syncButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+  }
+  Promise.all([loadFromServer(), saveToServer(true)])
+    .then(function() {
+      showNotification('Синхронизация завершена', 'success');
+    })
+    .catch(function() {
+      showNotification('Ошибка синхронизации', 'error');
+    })
+    .finally(function() {
+      if (syncButton) {
+        syncButton.classList.remove('syncing');
+        syncButton.innerHTML = '<i class="fas fa-sync-alt"></i>';
+      }
+    });
+}
+
 /* ================= МАСКА ТЕЛЕФОНА ================= */
 function initPhoneMask() {
   if (typeof IMask === 'undefined' || typeof $ === 'undefined') return;
@@ -43,7 +916,7 @@ function initPhoneMask() {
 
 /* ================= РЕДИРЕКТ НА РЕГИСТРАЦИЮ ================= */
 function initRegistrationRedirect() {
-  var registrationUrl = 'https://ixdk.github.io/my-auth-page/';
+  var registrationUrl = 'https://my-auth-page-crwj.vercel.app/';
   var guestRedirectBtn = document.getElementById('show-register-form');
   if (guestRedirectBtn) {
     guestRedirectBtn.addEventListener('click', function(e) {
@@ -96,11 +969,17 @@ function updateUIAfterRegistration() {
   if (fab) {
     fab.classList.add('fab--visible', 'fab--active');
   }
-  var userName = localStorage.getItem('userName') || 'Мой список';
+  var userName = localStorage.getItem('userName') || 'Новогодний список';
   var logo = document.querySelector('.header .logo');
   if (logo) {
     logo.textContent = userName;
   }
+
+  // Запускаем синхронизацию после регистрации
+  setTimeout(function() {
+    startAutoSync();
+    updateSyncStatus('Синхронизация...', true);
+  }, 1500);
 }
 
 /* ================= УПРАВЛЕНИЕ СОСТОЯНИЕМ UI ================= */
@@ -126,7 +1005,8 @@ function updateUIState() {
       var registerBtn = editorBox.querySelector('#register-btn-bottom');
       if (registerBtn) registerBtn.remove();
       setTimeout(function() {
-        return initEditor();
+        initEditor();
+        startAutoSync(); // Запускаем синхронизацию для зарегистрированных
       }, 100);
     }
     if (fab) {
@@ -140,6 +1020,7 @@ function updateUIState() {
       editorBox.setAttribute('data-initialized', 'true');
     }
   } else {
+    updateSyncStatus('Требуется регистрация', false);
     if (guestPrompt) {
       guestPrompt.style.display = 'block';
       guestPrompt.classList.remove('hidden');
@@ -180,7 +1061,7 @@ function addRegisterButtonToEditor() {
     _document$getElementB === void 0 ||
     _document$getElementB.addEventListener('click', function(e) {
       e.preventDefault();
-      var registrationUrl = 'https://ixdk.github.io/my-auth-page/';
+      var registrationUrl = 'https://my-auth-page-crwj.vercel.app/';
       window.open(registrationUrl, '_blank');
     });
 }
@@ -204,6 +1085,17 @@ function initEditor() {
   editorBox.classList.add('editor-box--editable');
   var registerBtn = editorBox.querySelector('#register-btn-bottom');
   if (registerBtn) registerBtn.remove();
+
+  // Добавляем кнопку синхронизации в инструменты
+  var editorTools = document.querySelector('.editor-tools');
+  if (editorTools && !editorTools.querySelector('[data-action="sync-now"]')) {
+    var syncTool = document.createElement('button');
+    syncTool.className = 'editor-tool';
+    syncTool.setAttribute('data-action', 'sync-now');
+    syncTool.setAttribute('title', 'Синхронизировать сейчас');
+    syncTool.innerHTML = '<i class="fas fa-sync-alt"></i>';
+    editorTools.prepend(syncTool);
+  }
   editorBox.addEventListener('input', function(e) {
     if (
       e.inputType === 'insertParagraph' ||
@@ -219,7 +1111,7 @@ function initEditor() {
   });
   editorBox.addEventListener('click', function(e) {
     if (e.target.type === 'checkbox') {
-      saveEditorState();
+      // autoSave() уже вызывается через change событие
     }
   });
   document.querySelectorAll('.editor-tool').forEach(function(tool) {
@@ -234,6 +1126,9 @@ function initEditor() {
           break;
         case 'print':
           printList();
+          break;
+        case 'sync-now':
+          manualSync();
           break;
       }
     });
@@ -273,7 +1168,7 @@ function initEditor() {
       var item = checkbox.closest('[data-type="item"]');
       if (item) item.remove();
     });
-    saveEditorState();
+    autoSave();
   }
   function printList() {
     var originalContent = document.querySelector('.editor-box').innerHTML;
@@ -301,54 +1196,31 @@ function initEditor() {
     }
     return node;
   }
-  function saveEditorState() {
-    var editorBox = document.querySelector('.editor-box');
-    if (!editorBox) return;
-    localStorage.setItem('editorContent', editorBox.innerHTML);
-    var checkboxes = editorBox.querySelectorAll('input[type="checkbox"]');
-    var checkboxStates = {};
-    checkboxes.forEach(function(checkbox, index) {
-      checkboxStates[index] = checkbox.checked;
-    });
-    localStorage.setItem('checkboxStates', JSON.stringify(checkboxStates));
-  }
-  function loadEditorState() {
-    var editorBox = document.querySelector('.editor-box');
-    if (!editorBox) return;
-    var savedContent = localStorage.getItem('editorContent');
-    var savedStates = localStorage.getItem('checkboxStates');
-    if (savedContent) {
-      editorBox.innerHTML = savedContent;
-      if (savedStates) {
-        var checkboxStates = JSON.parse(savedStates);
-        var checkboxes = editorBox.querySelectorAll('input[type="checkbox"]');
-        checkboxes.forEach(function(checkbox, index) {
-          if (checkboxStates[index] !== undefined) {
-            checkbox.checked = checkboxStates[index];
-          }
-        });
-      }
-    }
-  }
-  editorBox.addEventListener('input', debounce(saveEditorState, 1000));
+
+  // Загрузка состояния редактора
   loadEditorState();
-  function debounce(func, wait) {
-    var timeout;
-    return function executedFunction() {
-      for (
-        var _len = arguments.length, args = new Array(_len), _key = 0;
-        _key < _len;
-        _key++
-      ) {
-        args[_key] = arguments[_key];
-      }
-      var later = function later() {
-        clearTimeout(timeout);
-        func.apply(void 0, args);
-      };
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-    };
+}
+
+// Загрузка состояния редактора
+function loadEditorState() {
+  var editorBox = document.querySelector('.editor-box');
+  if (!editorBox) return;
+
+  // Сначала пробуем загрузить с сервера (но это делается в startAutoSync)
+  // Здесь загружаем только из localStorage как fallback
+  var savedContent = localStorage.getItem('editorContent');
+  var savedStates = localStorage.getItem('checkboxStates');
+  if (savedContent && savedContent !== '<div><br></div>') {
+    editorBox.innerHTML = savedContent;
+    if (savedStates) {
+      var checkboxStates = JSON.parse(savedStates);
+      var checkboxes = editorBox.querySelectorAll('input[type="checkbox"]');
+      checkboxes.forEach(function(checkbox, index) {
+        if (checkboxStates[index] !== undefined) {
+          checkbox.checked = checkboxStates[index];
+        }
+      });
+    }
   }
 }
 
@@ -540,6 +1412,44 @@ window.addEventListener('load', function() {
   }
 });
 
+/* ================= УВЕДОМЛЕНИЯ ================= */
+function showNotification(text) {
+  var type =
+    arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'info';
+  // Удаляем старые уведомления
+  document.querySelectorAll('.notification').forEach(function(el) {
+    return el.remove();
+  });
+  var notification = document.createElement('div');
+  notification.className = 'notification notification-'.concat(type);
+  notification.innerHTML = '\n        <div class="notification-content">\n            <i class="fas '
+    .concat(
+      type === 'success'
+        ? 'fa-check-circle'
+        : type === 'error'
+        ? 'fa-exclamation-circle'
+        : 'fa-info-circle',
+      '"></i>\n            <span>',
+    )
+    .concat(text, '</span>\n        </div>\n    ');
+  notification.style.cssText = '\n        position: fixed;\n        top: 20px;\n        right: 20px;\n        background: '.concat(
+    type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#007bff',
+    ";\n        color: white;\n        padding: 12px 20px;\n        border-radius: 8px;\n        z-index: 9999;\n        box-shadow: 0 4px 12px rgba(0,0,0,0.15);\n        animation: slideInRight 0.3s ease;\n        max-width: 300px;\n        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;\n        font-size: 14px;\n    ",
+  );
+  var contentStyle =
+    '\n        display: flex;\n        align-items: center;\n        gap: 10px;\n    ';
+  notification.querySelector(
+    '.notification-content',
+  ).style.cssText = contentStyle;
+  document.body.appendChild(notification);
+  setTimeout(function() {
+    notification.style.animation = 'slideOutRight 0.3s ease';
+    setTimeout(function() {
+      return notification.remove();
+    }, 300);
+  }, 3000);
+}
+
 /* ================= ОСНОВНАЯ ИНИЦИАЛИЗАЦИЯ ================= */
 document.addEventListener('DOMContentLoaded', function() {
   var _document$querySelect;
@@ -636,6 +1546,13 @@ document.addEventListener('DOMContentLoaded', function() {
       initCardTilt();
     }, 250);
   });
+
+  // Инициализация синхронизации при загрузке
+  if (localStorage.getItem('userRegistered') === 'true') {
+    setTimeout(function() {
+      startAutoSync();
+    }, 2000);
+  }
 });
 
 /* ================= jQuery READY ================= */
@@ -645,6 +1562,8 @@ if (typeof $ !== 'undefined') {
   });
 }
 
-/* ================= CSS СТИЛИ ДЛЯ КНОПКИ РЕГИСТРАЦИИ И РЕДАКТОРА ================= */
+/* ================= CSS СТИЛИ ДЛЯ УВЕДОМЛЕНИЙ ================= */
 var style = document.createElement('style');
-style.textContent = document.head.appendChild(style);
+style.textContent =
+  '\n    @keyframes slideInRight {\n        from {\n            transform: translateX(100%);\n            opacity: 0;\n        }\n        to {\n            transform: translateX(0);\n            opacity: 1;\n        }\n    }\n    \n    @keyframes slideOutRight {\n        from {\n            transform: translateX(0);\n            opacity: 1;\n        }\n        to {\n            transform: translateX(100%);\n            opacity: 0;\n        }\n    }\n    \n    .notification {\n        position: fixed;\n        top: 20px;\n        right: 20px;\n        z-index: 9999;\n        animation: slideInRight 0.3s ease;\n    }\n    \n    .notification-content {\n        display: flex;\n        align-items: center;\n        gap: 10px;\n    }\n';
+document.head.appendChild(style);
