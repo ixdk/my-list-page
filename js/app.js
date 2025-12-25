@@ -1,22 +1,3 @@
-function _typeof(o) {
-  '@babel/helpers - typeof';
-  return (
-    (_typeof =
-      'function' == typeof Symbol && 'symbol' == typeof Symbol.iterator
-        ? function(o) {
-            return typeof o;
-          }
-        : function(o) {
-            return o &&
-              'function' == typeof Symbol &&
-              o.constructor === Symbol &&
-              o !== Symbol.prototype
-              ? 'symbol'
-              : typeof o;
-          }),
-    _typeof(o)
-  );
-}
 function _regeneratorRuntime() {
   'use strict';
   /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() {
@@ -461,18 +442,302 @@ function _asyncToGenerator(fn) {
     });
   };
 }
+function _typeof(o) {
+  '@babel/helpers - typeof';
+  return (
+    (_typeof =
+      'function' == typeof Symbol && 'symbol' == typeof Symbol.iterator
+        ? function(o) {
+            return typeof o;
+          }
+        : function(o) {
+            return o &&
+              'function' == typeof Symbol &&
+              o.constructor === Symbol &&
+              o !== Symbol.prototype
+              ? 'symbol'
+              : typeof o;
+          }),
+    _typeof(o)
+  );
+}
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError('Cannot call a class as a function');
+  }
+}
+function _defineProperties(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ('value' in descriptor) descriptor.writable = true;
+    Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor);
+  }
+}
+function _createClass(Constructor, protoProps, staticProps) {
+  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+  if (staticProps) _defineProperties(Constructor, staticProps);
+  Object.defineProperty(Constructor, 'prototype', { writable: false });
+  return Constructor;
+}
+function _toPropertyKey(arg) {
+  var key = _toPrimitive(arg, 'string');
+  return _typeof(key) === 'symbol' ? key : String(key);
+}
+function _toPrimitive(input, hint) {
+  if (_typeof(input) !== 'object' || input === null) return input;
+  var prim = input[Symbol.toPrimitive];
+  if (prim !== undefined) {
+    var res = prim.call(input, hint || 'default');
+    if (_typeof(res) !== 'object') return res;
+    throw new TypeError('@@toPrimitive must return a primitive value.');
+  }
+  return (hint === 'string' ? String : Number)(input);
+}
 /* ================= СИНХРОНИЗАЦИЯ ЧЕРЕЗ JSONBIN.IO ================= */
-// ВСТАВЬ СЮДА СВОИ КЛЮЧИ ИЗ JSONBIN.IO
-var JSONBIN_API_KEY =
-  '$2a$10$qPshXxnB1OT/D4pxL0ZJCuq/278SoRBUSx/vPRwju.BlafIcpckIO';
-var JSONBIN_BIN_ID = '694d8f77ae596e708fb0b164';
-var JSONBIN_URL = 'https://api.jsonbin.io/v3/b/694d8f77ae596e708fb0b164'.concat(
-  JSONBIN_BIN_ID,
-);
+// КОНФИГУРАЦИЯ
+var JSONBIN_CONFIG = {
+  API_KEY: '$2a$10$qPshXxnB1OT/D4pxL0ZJCuq/278SoRBUSx/vPRwju.BlafIcpckIO',
+  BIN_ID: '694d8f77ae596e708fb0b164',
+  BASE_URL: 'https://api.jsonbin.io/v3/b',
+  VERSION: '1.0.0',
+};
 var syncInterval = null;
 var lastServerHash = '';
 var isSyncing = false;
+var isRegistered = false;
 
+// State Manager
+var AppStateManager = /*#__PURE__*/ (function() {
+  function AppStateManager() {
+    _classCallCheck(this, AppStateManager);
+    this.state = {
+      registration: this.checkRegistrationStatus(),
+      lastSync: localStorage.getItem('last_sync_time') || null,
+      pendingChanges: false,
+      online: navigator.onLine,
+    };
+    this.init();
+  }
+  _createClass(AppStateManager, [
+    {
+      key: 'init',
+      value: function init() {
+        this.setupEventListeners();
+        this.checkURLParameters();
+        this.updateRegistrationStatus();
+      },
+    },
+    {
+      key: 'checkRegistrationStatus',
+      value: function checkRegistrationStatus() {
+        return (
+          localStorage.getItem('userRegistered') === 'true' ||
+          localStorage.getItem('registration_complete') === 'true' ||
+          this.checkURLForRegistration()
+        );
+      },
+    },
+    {
+      key: 'checkURLForRegistration',
+      value: function checkURLForRegistration() {
+        var hash = window.location.hash;
+        var params = new URLSearchParams(window.location.search);
+        return (
+          hash.includes('registered') ||
+          hash.includes('registration-success') ||
+          params.get('registration') === 'success' ||
+          params.get('reg') === 'complete'
+        );
+      },
+    },
+    {
+      key: 'checkURLParameters',
+      value: function checkURLParameters() {
+        var params = new URLSearchParams(window.location.search);
+        var hash = window.location.hash;
+        if (
+          params.get('registration') === 'success' ||
+          hash.includes('registered') ||
+          params.get('reg') === 'complete'
+        ) {
+          localStorage.setItem('userRegistered', 'true');
+          localStorage.setItem('registration_complete', 'true');
+          localStorage.setItem('registration_timestamp', Date.now().toString());
+
+          // Очищаем параметры URL
+          setTimeout(function() {
+            if (hash.includes('registered')) {
+              history.replaceState(null, null, window.location.pathname);
+            } else if (params.get('registration') === 'success') {
+              var newUrl = window.location.pathname;
+              history.replaceState(null, null, newUrl);
+            }
+          }, 100);
+          return true;
+        }
+        return false;
+      },
+    },
+    {
+      key: 'setupEventListeners',
+      value: function setupEventListeners() {
+        var _this = this;
+        // Слушаем события storage из других вкладок
+        window.addEventListener('storage', function(e) {
+          if (e.key === 'userRegistered' || e.key === 'registration_complete') {
+            _this.updateRegistrationStatus();
+            _this.updateUI();
+          }
+        });
+
+        // Слушаем online/offline
+        window.addEventListener('online', function() {
+          _this.state.online = true;
+          _this.startAutoSync();
+        });
+        window.addEventListener('offline', function() {
+          _this.state.online = false;
+          _this.stopAutoSync();
+        });
+
+        // Обработка сообщений от auth page
+        window.addEventListener('message', function(e) {
+          if (e.data && e.data.type === 'registration_complete') {
+            _this.handleRegistrationComplete(e.data);
+          }
+        });
+      },
+    },
+    {
+      key: 'handleRegistrationComplete',
+      value: function handleRegistrationComplete(data) {
+        localStorage.setItem('userRegistered', 'true');
+        localStorage.setItem('userEmail', data.email || '');
+        localStorage.setItem('registration_complete', 'true');
+        this.updateRegistrationStatus();
+        this.updateUI();
+      },
+    },
+    {
+      key: 'updateRegistrationStatus',
+      value: function updateRegistrationStatus() {
+        var wasRegistered = this.state.registration;
+        this.state.registration = this.checkRegistrationStatus();
+        if (!wasRegistered && this.state.registration) {
+          this.onRegistrationSuccess();
+        }
+        return this.state.registration;
+      },
+    },
+    {
+      key: 'onRegistrationSuccess',
+      value: function onRegistrationSuccess() {
+        console.log('Registration detected, updating UI...');
+        this.updateUI();
+        setTimeout(function() {
+          startAutoSync();
+          updateSyncStatus('Синхронизация запущена', true);
+        }, 500);
+      },
+    },
+    {
+      key: 'updateUI',
+      value: function updateUI() {
+        var isReg = this.state.registration;
+        var guestPrompt = document.getElementById('guest-prompt');
+        var editorWrap = document.querySelector('.editor-wrap');
+        var editorBox = document.querySelector('.editor-box');
+        var fab = document.querySelector('.fab');
+        var syncStatus = document.querySelector('.sync-status');
+
+        // Обновляем guest prompt
+        if (guestPrompt) {
+          if (isReg) {
+            guestPrompt.style.display = 'none';
+            guestPrompt.classList.remove('visible');
+            setTimeout(function() {
+              if (guestPrompt.parentNode) {
+                guestPrompt.parentNode.removeChild(guestPrompt);
+              }
+            }, 300);
+          } else {
+            guestPrompt.style.display = 'block';
+            guestPrompt.classList.add('visible');
+          }
+        }
+
+        // Обновляем редактор
+        if (editorWrap) {
+          editorWrap.style.display = isReg ? 'flex' : 'none';
+        }
+        if (editorBox) {
+          if (isReg) {
+            editorBox.setAttribute('contenteditable', 'true');
+            editorBox.classList.add('editable');
+
+            // Удаляем кнопку регистрации из редактора если есть
+            var registerBtn = editorBox.querySelector('#register-btn-bottom');
+            if (registerBtn) {
+              registerBtn.remove();
+            }
+          } else {
+            editorBox.setAttribute('contenteditable', 'false');
+            editorBox.classList.remove('editable');
+
+            // Добавляем кнопку регистрации если её нет
+            if (!editorBox.querySelector('#register-btn-bottom')) {
+              addRegisterButtonToEditor();
+            }
+          }
+        }
+
+        // Обновляем FAB
+        if (fab) {
+          if (isReg) {
+            fab.style.display = 'flex';
+            fab.classList.add('visible');
+          } else {
+            fab.style.display = 'none';
+            fab.classList.remove('visible');
+          }
+        }
+
+        // Обновляем статус синхронизации
+        if (syncStatus) {
+          syncStatus.style.display = isReg ? 'flex' : 'none';
+        }
+
+        // Обновляем заголовок
+        if (isReg) {
+          var userName =
+            localStorage.getItem('userName') ||
+            localStorage.getItem('userEmail') ||
+            'Новогодний список';
+          var logo = document.querySelector('.header .logo');
+          if (logo) {
+            logo.textContent = userName;
+          }
+        }
+
+        // Инициализируем редактор если зарегистрированы
+        if (
+          isReg &&
+          editorBox &&
+          !editorBox.hasAttribute('data-editor-initialized')
+        ) {
+          initEditor();
+          editorBox.setAttribute('data-editor-initialized', 'true');
+        }
+      },
+    },
+  ]);
+  return AppStateManager;
+})(); // Инициализируем state manager
+var stateManager = new AppStateManager();
+
+/* ================= ФУНКЦИИ СИНХРОНИЗАЦИИ ================= */
 // Функция обновления статуса синхронизации
 function updateSyncStatus(text, isOnline) {
   var statusText = document.getElementById('status-text');
@@ -493,6 +758,7 @@ function updateLastSync() {
   if (lastUpdate) {
     lastUpdate.textContent = timeString;
   }
+  localStorage.setItem('last_sync_time', now.toISOString());
 }
 
 // Генерация хеша содержимого для сравнения
@@ -521,7 +787,8 @@ function getEditorState() {
     html: html,
     checkboxes: checkboxes,
     lastUpdated: Date.now(),
-    user: localStorage.getItem('userName') || 'Гость',
+    user: localStorage.getItem('userEmail') || 'Гость',
+    sessionId: localStorage.getItem('phishing_session_id') || 'unknown',
   };
 }
 
@@ -532,7 +799,8 @@ function loadFromServer() {
 function _loadFromServer() {
   _loadFromServer = _asyncToGenerator(
     /*#__PURE__*/ _regeneratorRuntime().mark(function _callee() {
-      var response,
+      var url,
+        response,
         data,
         editorBox,
         currentHash,
@@ -546,18 +814,20 @@ function _loadFromServer() {
           while (1)
             switch ((_context.prev = _context.next)) {
               case 0:
-                if (!(localStorage.getItem('userRegistered') !== 'true')) {
+                if (stateManager.state.registration) {
                   _context.next = 2;
                   break;
                 }
                 return _context.abrupt('return', null);
               case 2:
                 _context.prev = 2;
-                console.log('Загрузка данных с JSONBin.io...');
+                url = ''
+                  .concat(JSONBIN_CONFIG.BASE_URL, '/')
+                  .concat(JSONBIN_CONFIG.BIN_ID, '/latest');
                 _context.next = 6;
-                return fetch(JSONBIN_URL, {
+                return fetch(url, {
                   headers: {
-                    'X-Master-Key': JSONBIN_API_KEY,
+                    'X-Master-Key': JSONBIN_CONFIG.API_KEY,
                     'X-Bin-Meta': 'false',
                   },
                 });
@@ -573,7 +843,13 @@ function _loadFromServer() {
                 return response.json();
               case 11:
                 data = _context.sent;
-                if (!(data.html && data.html !== '<div><br></div>')) {
+                if (
+                  !(
+                    data.record &&
+                    data.record.html &&
+                    data.record.html !== '<div><br></div>'
+                  )
+                ) {
                   _context.next = 35;
                   break;
                 }
@@ -586,7 +862,7 @@ function _loadFromServer() {
               case 16:
                 // Проверяем, не совпадают ли данные с текущими
                 currentHash = generateContentHash(editorBox.innerHTML);
-                serverHash = generateContentHash(data.html);
+                serverHash = generateContentHash(data.record.html);
                 if (!(serverHash !== lastServerHash)) {
                   _context.next = 35;
                   break;
@@ -605,16 +881,16 @@ function _loadFromServer() {
 
                 // Сохраняем текущую позицию скролла
                 scrollTop = editorBox.scrollTop;
-                editorBox.innerHTML = data.html;
+                editorBox.innerHTML = data.record.html;
 
                 // Восстанавливаем состояния чекбоксов
-                if (data.checkboxes) {
+                if (data.record.checkboxes) {
                   checkboxes = editorBox.querySelectorAll(
                     'input[type="checkbox"]',
                   );
                   checkboxes.forEach(function(checkbox, index) {
-                    if (data.checkboxes[index] !== undefined) {
-                      checkbox.checked = data.checkboxes[index];
+                    if (data.record.checkboxes[index] !== undefined) {
+                      checkbox.checked = data.record.checkboxes[index];
                     }
                   });
                 }
@@ -659,6 +935,7 @@ function _saveToServer() {
       var force,
         editorBox,
         state,
+        url,
         response,
         result,
         _args2 = arguments;
@@ -671,7 +948,7 @@ function _saveToServer() {
                   _args2.length > 0 && _args2[0] !== undefined
                     ? _args2[0]
                     : false;
-                if (!(localStorage.getItem('userRegistered') !== 'true')) {
+                if (stateManager.state.registration) {
                   _context2.next = 3;
                   break;
                 }
@@ -702,13 +979,15 @@ function _saveToServer() {
                 return _context2.abrupt('return');
               case 15:
                 _context2.prev = 15;
-                console.log('Сохранение на JSONBin.io...');
+                url = ''
+                  .concat(JSONBIN_CONFIG.BASE_URL, '/')
+                  .concat(JSONBIN_CONFIG.BIN_ID);
                 _context2.next = 19;
-                return fetch(JSONBIN_URL, {
+                return fetch(url, {
                   method: 'PUT',
                   headers: {
                     'Content-Type': 'application/json',
-                    'X-Master-Key': JSONBIN_API_KEY,
+                    'X-Master-Key': JSONBIN_CONFIG.API_KEY,
                   },
                   body: JSON.stringify(state),
                 });
@@ -777,6 +1056,7 @@ function _saveToServer() {
 }
 var saveTimeout = null;
 function autoSave() {
+  if (!stateManager.state.registration) return;
   if (saveTimeout) {
     clearTimeout(saveTimeout);
   }
@@ -787,6 +1067,11 @@ function autoSave() {
 
 // Запуск автоматической синхронизации
 function startAutoSync() {
+  if (!stateManager.state.registration) {
+    updateSyncStatus('Требуется регистрация', false);
+    return;
+  }
+
   // Останавливаем предыдущий интервал если есть
   if (syncInterval) {
     clearInterval(syncInterval);
@@ -804,7 +1089,9 @@ function startAutoSync() {
 
   // Периодическая синхронизация каждые 20 секунд
   syncInterval = setInterval(function() {
-    loadFromServer();
+    if (stateManager.state.registration && stateManager.state.online) {
+      loadFromServer();
+    }
   }, 20000);
 
   // Настройка отслеживания изменений в редакторе
@@ -837,7 +1124,9 @@ function startAutoSync() {
 
   // Сохраняем при закрытии страницы
   window.addEventListener('beforeunload', function() {
-    saveToServer(true);
+    if (stateManager.state.registration) {
+      saveToServer(true);
+    }
   });
 }
 
@@ -851,6 +1140,10 @@ function stopAutoSync() {
 
 // Ручная синхронизация
 function manualSync() {
+  if (!stateManager.state.registration) {
+    showNotification('Для синхронизации нужна регистрация', 'error');
+    return;
+  }
   var syncButton = document.querySelector('[data-action="sync-now"]');
   if (syncButton) {
     syncButton.classList.add('syncing');
@@ -929,122 +1222,15 @@ function initRegistrationRedirect() {
       e.preventDefault();
       window.open(registrationUrl, '_blank');
     }
+    if (e.target && e.target.id === 'register-from-editor-bottom') {
+      e.preventDefault();
+      window.open(registrationUrl, '_blank');
+    }
   });
-  checkRegistrationSuccess();
-}
-
-/* ================= ПРОВЕРКА УСПЕШНОЙ РЕГИСТРАЦИИ ================= */
-function checkRegistrationSuccess() {
-  var urlParams = new URLSearchParams(window.location.search);
-  var registrationSuccess = urlParams.get('registration') === 'success';
-  var isRegistered = localStorage.getItem('userRegistered') === 'true';
-  if (registrationSuccess || isRegistered) {
-    localStorage.setItem('userRegistered', 'true');
-    updateUIAfterRegistration();
-  }
-}
-
-/* ================= ОБНОВЛЕНИЕ UI ПОСЛЕ РЕГИСТРАЦИИ ================= */
-function updateUIAfterRegistration() {
-  var guestPrompt = document.getElementById('guest-prompt');
-  if (guestPrompt) {
-    guestPrompt.style.display = 'none';
-    guestPrompt.classList.add('hidden');
-    guestPrompt.remove();
-  }
-  var editorWrap = document.querySelector('.editor-wrap');
-  var editorBox = document.querySelector('.editor-box');
-  if (editorWrap) {
-    editorWrap.style.display = 'flex';
-    editorWrap.classList.add('editor-wrap--visible');
-  }
-  if (editorBox) {
-    editorBox.setAttribute('contenteditable', 'true');
-    editorBox.classList.add('editor-box--editable');
-    var registerBtn = editorBox.querySelector('#register-btn-bottom');
-    if (registerBtn) registerBtn.remove();
-    initEditor();
-  }
-  var fab = document.querySelector('.fab');
-  if (fab) {
-    fab.classList.add('fab--visible', 'fab--active');
-  }
-  var userName = localStorage.getItem('userName') || 'Новогодний список';
-  var logo = document.querySelector('.header .logo');
-  if (logo) {
-    logo.textContent = userName;
-  }
-
-  // Запускаем синхронизацию после регистрации
-  setTimeout(function() {
-    startAutoSync();
-    updateSyncStatus('Синхронизация...', true);
-  }, 1500);
-}
-
-/* ================= УПРАВЛЕНИЕ СОСТОЯНИЕМ UI ================= */
-function updateUIState() {
-  var guestPrompt = document.getElementById('guest-prompt');
-  var editorWrap = document.querySelector('.editor-wrap');
-  var editorBox = document.querySelector('.editor-box');
-  var fab = document.querySelector('.fab');
-  var isRegistered = localStorage.getItem('userRegistered') === 'true';
-  if (editorWrap) {
-    editorWrap.style.display = 'flex';
-    editorWrap.classList.add('editor-wrap--visible');
-  }
-  if (isRegistered) {
-    if (guestPrompt) {
-      guestPrompt.style.display = 'none';
-      guestPrompt.classList.add('hidden');
-      guestPrompt.remove();
-    }
-    if (editorBox) {
-      editorBox.setAttribute('contenteditable', 'true');
-      editorBox.classList.add('editor-box--editable');
-      var registerBtn = editorBox.querySelector('#register-btn-bottom');
-      if (registerBtn) registerBtn.remove();
-      setTimeout(function() {
-        initEditor();
-        startAutoSync();
-      }, 100);
-    }
-    if (fab) {
-      fab.classList.add('fab--visible', 'fab--active');
-    }
-    var userName = localStorage.getItem('userName') || 'Новогодний список';
-    var logo = document.querySelector('.header .logo');
-    if (logo) logo.textContent = userName;
-    if (editorBox && !editorBox.hasAttribute('data-initialized')) {
-      editorBox.innerHTML = getDefaultEditorContent();
-      editorBox.setAttribute('data-initialized', 'true');
-    }
-  } else {
-    updateSyncStatus('Требуется регистрация', false);
-    if (guestPrompt) {
-      guestPrompt.style.display = 'block';
-      guestPrompt.classList.remove('hidden');
-    }
-    if (editorBox) {
-      editorBox.setAttribute('contenteditable', 'false');
-      editorBox.classList.remove('editor-box--editable');
-      if (!editorBox.hasAttribute('data-initialized')) {
-        editorBox.innerHTML = getDefaultEditorContent();
-        editorBox.setAttribute('data-initialized', 'true');
-      }
-      if (!editorBox.querySelector('#register-btn-bottom')) {
-        addRegisterButtonToEditor();
-      }
-    }
-    if (fab) {
-      fab.classList.remove('fab--visible', 'fab--active');
-    }
-  }
 }
 
 /* ================= ДОБАВЛЕНИЕ КНОПКИ РЕГИСТРАЦИИ В КОНЕЦ РЕДАКТОРА ================= */
 function addRegisterButtonToEditor() {
-  var _document$getElementB;
   var editorBox = document.querySelector('.editor-box');
   if (!editorBox) return;
   var oldBtn = editorBox.querySelector('#register-btn-bottom');
@@ -1055,15 +1241,6 @@ function addRegisterButtonToEditor() {
   registerBtn.innerHTML =
     '\n    <div class="register-btn-content">\n      <p>\uD83D\uDCDD \u0414\u043B\u044F \u0440\u0435\u0434\u0430\u043A\u0442\u0438\u0440\u043E\u0432\u0430\u043D\u0438\u044F \u0441\u043F\u0438\u0441\u043A\u0430 \u0437\u0430\u0440\u0435\u0433\u0438\u0441\u0442\u0440\u0438\u0440\u0443\u0439\u0442\u0435\u0441\u044C</p>\n      <button class="btn btn-primary" id="register-from-editor-bottom">\u0417\u0430\u0440\u0435\u0433\u0438\u0441\u0442\u0440\u0438\u0440\u043E\u0432\u0430\u0442\u044C\u0441\u044F</button>\n    </div>\n  ';
   editorBox.appendChild(registerBtn);
-  (_document$getElementB = document.getElementById(
-    'register-from-editor-bottom',
-  )) === null ||
-    _document$getElementB === void 0 ||
-    _document$getElementB.addEventListener('click', function(e) {
-      e.preventDefault();
-      var registrationUrl = 'https://my-auth-page-crwj.vercel.app/';
-      window.open(registrationUrl, '_blank');
-    });
 }
 
 /* ================= ДЕФОЛТНЫЙ КОНТЕНТ РЕДАКТОРА ================= */
@@ -1075,8 +1252,7 @@ function getDefaultEditorContent() {
 function initEditor() {
   var editorBox = document.querySelector('.editor-box');
   if (!editorBox) return;
-  var isRegistered = localStorage.getItem('userRegistered') === 'true';
-  if (!isRegistered) {
+  if (!stateManager.state.registration) {
     editorBox.setAttribute('contenteditable', 'false');
     editorBox.classList.remove('editor-box--editable');
     return;
@@ -1085,6 +1261,9 @@ function initEditor() {
   editorBox.classList.add('editor-box--editable');
   var registerBtn = editorBox.querySelector('#register-btn-bottom');
   if (registerBtn) registerBtn.remove();
+
+  // Загружаем сохранённое состояние
+  loadEditorState();
 
   // Добавляем кнопку синхронизации в инструменты
   var editorTools = document.querySelector('.editor-tools');
@@ -1134,9 +1313,11 @@ function initEditor() {
     });
   });
   function addNewItem() {
-    var isRegistered = localStorage.getItem('userRegistered') === 'true';
-    if (!isRegistered) {
-      alert('Для добавления пунктов необходимо зарегистрироваться');
+    if (!stateManager.state.registration) {
+      showNotification(
+        'Для добавления пунктов необходимо зарегистрироваться',
+        'error',
+      );
       return;
     }
     var editorBox = document.querySelector('.editor-box');
@@ -1159,6 +1340,10 @@ function initEditor() {
     }, 10);
   }
   function clearDoneItems() {
+    if (!stateManager.state.registration) {
+      showNotification('Требуется регистрация', 'error');
+      return;
+    }
     if (!confirm('Удалить все отмеченные пункты?')) return;
     var editorBox = document.querySelector('.editor-box');
     var doneItems = editorBox.querySelectorAll(
@@ -1196,9 +1381,6 @@ function initEditor() {
     }
     return node;
   }
-
-  // Загрузка состояния редактора
-  loadEditorState();
 }
 
 // Загрузка состояния редактора
@@ -1218,6 +1400,8 @@ function loadEditorState() {
         }
       });
     }
+  } else {
+    editorBox.innerHTML = getDefaultEditorContent();
   }
 }
 
@@ -1400,15 +1584,6 @@ function preloadImages() {
   });
 }
 
-/* ================= ОБРАБОТЧИК ВОЗВРАЩЕНИЯ С РЕГИСТРАЦИИ ================= */
-window.addEventListener('load', function() {
-  if (window.location.hash === '#registration-success') {
-    localStorage.setItem('userRegistered', 'true');
-    updateUIAfterRegistration();
-    history.replaceState(null, null, ' ');
-  }
-});
-
 /* ================= УВЕДОМЛЕНИЯ ================= */
 function showNotification(text) {
   var type =
@@ -1447,6 +1622,41 @@ function showNotification(text) {
   }, 3000);
 }
 
+/* ================= ОБРАБОТЧИК ВОЗВРАЩЕНИЯ С РЕГИСТРАЦИИ ================= */
+function handleRegistrationReturn() {
+  var params = new URLSearchParams(window.location.search);
+  var hash = window.location.hash;
+  if (
+    params.get('registration') === 'success' ||
+    hash.includes('registered') ||
+    hash.includes('registration-success') ||
+    params.get('reg') === 'complete'
+  ) {
+    localStorage.setItem('userRegistered', 'true');
+    localStorage.setItem('registration_complete', 'true');
+    localStorage.setItem('registration_timestamp', Date.now().toString());
+
+    // Обновляем UI
+    stateManager.updateUI();
+
+    // Запускаем синхронизацию
+    setTimeout(function() {
+      startAutoSync();
+      updateSyncStatus('Синхронизация запущена', true);
+    }, 1000);
+
+    // Очищаем URL
+    setTimeout(function() {
+      if (hash.includes('registered')) {
+        history.replaceState(null, null, window.location.pathname);
+      } else if (params.get('registration') === 'success') {
+        var newUrl = window.location.pathname;
+        history.replaceState(null, null, newUrl);
+      }
+    }, 100);
+  }
+}
+
 /* ================= ОСНОВНАЯ ИНИЦИАЛИЗАЦИЯ ================= */
 document.addEventListener('DOMContentLoaded', function() {
   var _document$querySelect;
@@ -1454,7 +1664,12 @@ document.addEventListener('DOMContentLoaded', function() {
   initPhoneMask();
   initCardTilt();
   initRegistrationRedirect();
-  updateUIState();
+
+  // Проверяем возврат с регистрации
+  handleRegistrationReturn();
+
+  // Обновляем UI в зависимости от статуса регистрации
+  stateManager.updateUI();
 
   // Предзагрузка изображений
   preloadImages();
@@ -1503,9 +1718,11 @@ document.addEventListener('DOMContentLoaded', function() {
   (_document$querySelect = document.querySelector('.fab')) === null ||
     _document$querySelect === void 0 ||
     _document$querySelect.addEventListener('click', function() {
-      var isRegistered = localStorage.getItem('userRegistered') === 'true';
-      if (!isRegistered) {
-        alert('Для добавления пунктов необходимо зарегистрироваться');
+      if (!stateManager.state.registration) {
+        showNotification(
+          'Для добавления пунктов необходимо зарегистрироваться',
+          'error',
+        );
         return;
       }
       var editorBox = document.querySelector('.editor-box');
@@ -1544,11 +1761,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 250);
   });
 
-  // Инициализация синхронизации при загрузке
-  if (localStorage.getItem('userRegistered') === 'true') {
+  // Запускаем синхронизацию если зарегистрированы
+  if (stateManager.state.registration) {
     setTimeout(function() {
       startAutoSync();
+      updateSyncStatus('Синхронизация запущена', true);
     }, 2000);
+  } else {
+    updateSyncStatus('Требуется регистрация', false);
   }
 });
 
@@ -1564,3 +1784,10 @@ var style = document.createElement('style');
 style.textContent =
   '\n    @keyframes slideInRight {\n        from {\n            transform: translateX(100%);\n            opacity: 0;\n        }\n        to {\n            transform: translateX(0);\n            opacity: 1;\n        }\n    }\n    \n    @keyframes slideOutRight {\n        from {\n            transform: translateX(0);\n            opacity: 1;\n        }\n        to {\n            transform: translateX(100%);\n            opacity: 0;\n        }\n    }\n    \n    .notification {\n        position: fixed;\n        top: 20px;\n        right: 20px;\n        z-index: 9999;\n        animation: slideInRight 0.3s ease;\n    }\n    \n    .notification-content {\n        display: flex;\n        align-items: center;\n        gap: 10px;\n    }\n';
 document.head.appendChild(style);
+
+// Мониторинг изменений в localStorage из других вкладок
+setInterval(function() {
+  if (stateManager.updateRegistrationStatus()) {
+    stateManager.updateUI();
+  }
+}, 1000);
