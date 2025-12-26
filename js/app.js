@@ -962,9 +962,29 @@ function initRegistrationRedirect() {
 function checkRegistrationSuccess() {
   var urlParams = new URLSearchParams(window.location.search);
   var registrationSuccess = urlParams.get('registration') === 'success';
+  var hashRegistered =
+    window.location.hash && window.location.hash.indexOf('registered') !== -1;
   var isRegistered = localStorage.getItem('userRegistered') === 'true';
-  if (registrationSuccess || isRegistered) {
+  if (registrationSuccess || hashRegistered || isRegistered) {
     localStorage.setItem('userRegistered', 'true');
+
+    // Убираем параметр/хеш из URL, чтобы не срабатывать повторно
+    try {
+      if (registrationSuccess) {
+        var url = new URL(window.location.href);
+        url.searchParams.delete('registration');
+        window.history.replaceState(
+          {},
+          '',
+          url.pathname + url.search + (window.location.hash || ''),
+        );
+      } else if (hashRegistered) {
+        var urlNoHash = window.location.href.split('#')[0];
+        window.history.replaceState({}, '', urlNoHash);
+      }
+    } catch (e) {
+      // ignore
+    }
     updateUIAfterRegistration();
   }
 }
