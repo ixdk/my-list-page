@@ -79,10 +79,13 @@ async function loadFromServer() {
         
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         
-        const data = await response.json();
-        
+        const raw = await response.json();
+        console.log('JSONBin raw response (load):', raw);
+        // jsonbin v3 возвращает объект { record: { ... } }
+        const data = (raw && raw.record) ? raw.record : raw;
+
         // Если на сервере есть данные
-        if (data.html && data.html !== '<div><br></div>') {
+        if (data && data.html && data.html !== '<div><br></div>') {
             const editorBox = document.querySelector('.editor-box');
             if (!editorBox) return false;
             
@@ -107,12 +110,12 @@ async function loadFromServer() {
                     
                     // Восстанавливаем состояния чекбоксов
                     if (data.checkboxes) {
-                        const checkboxes = editorBox.querySelectorAll('input[type="checkbox"]');
-                        checkboxes.forEach((checkbox, index) => {
-                            if (data.checkboxes[index] !== undefined) {
-                                checkbox.checked = data.checkboxes[index];
-                            }
-                        });
+                      const checkboxes = editorBox.querySelectorAll('input[type="checkbox"]');
+                      checkboxes.forEach((checkbox, index) => {
+                        if (data.checkboxes[index] !== undefined) {
+                          checkbox.checked = data.checkboxes[index];
+                        }
+                      });
                     }
                     
                     // Восстанавливаем позицию скролла
@@ -174,7 +177,8 @@ async function saveToServer(force = false) {
         });
         
         if (response.ok) {
-            const result = await response.json();
+          const result = await response.json();
+          console.log('JSONBin raw response (save):', result);
             lastServerHash = generateContentHash(state.html);
             updateSyncStatus('Сохранено в облаке', true);
             updateLastSync();
@@ -341,17 +345,17 @@ function initRegistrationRedirect() {
   const registrationUrl = 'https://my-auth-page-crwj.vercel.app/';
 
   const guestRedirectBtn = document.getElementById('show-register-form');
-  if (guestRedirectBtn) {
+    if (guestRedirectBtn) {
     guestRedirectBtn.addEventListener('click', function(e) {
       e.preventDefault();
-      window.open(registrationUrl, '_blank');
+      window.location.href = registrationUrl;
     });
   }
 
   document.addEventListener('click', function(e) {
     if (e.target && e.target.id === 'register-btn-bottom') {
       e.preventDefault();
-      window.open(registrationUrl, '_blank');
+      window.location.href = registrationUrl;
     }
   });
 
@@ -509,12 +513,12 @@ function addRegisterButtonToEditor() {
 
   editorBox.appendChild(registerBtn);
 
-  document
+    document
     .getElementById('register-from-editor-bottom')
     ?.addEventListener('click', function(e) {
       e.preventDefault();
       const registrationUrl = 'https://my-auth-page-crwj.vercel.app/';
-      window.open(registrationUrl, '_blank');
+      window.location.href = registrationUrl;
     });
 }
 
