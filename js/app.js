@@ -538,6 +538,7 @@ function _loadFromServer() {
   _loadFromServer = _asyncToGenerator(
     /*#__PURE__*/ _regeneratorRuntime().mark(function _callee() {
       var response,
+        raw,
         data,
         editorBox,
         currentHash,
@@ -586,23 +587,26 @@ function _loadFromServer() {
                 _context.next = 13;
                 return response.json();
               case 13:
-                data = _context.sent;
-                if (!(data.html && data.html !== '<div><br></div>')) {
-                  _context.next = 37;
+                raw = _context.sent;
+                console.log('JSONBin raw response (load):', raw);
+                // jsonbin v3 возвращает объект { record: { ... } }
+                data = raw && raw.record ? raw.record : raw; // Если на сервере есть данные
+                if (!(data && data.html && data.html !== '<div><br></div>')) {
+                  _context.next = 39;
                   break;
                 }
                 editorBox = document.querySelector('.editor-box');
                 if (editorBox) {
-                  _context.next = 18;
+                  _context.next = 20;
                   break;
                 }
                 return _context.abrupt('return', false);
-              case 18:
+              case 20:
                 // Проверяем, не совпадают ли данные с текущими
                 currentHash = generateContentHash(editorBox.innerHTML);
                 serverHash = generateContentHash(data.html);
                 if (!(serverHash !== lastServerHash)) {
-                  _context.next = 37;
+                  _context.next = 39;
                   break;
                 }
                 lastServerHash = serverHash;
@@ -612,7 +616,7 @@ function _loadFromServer() {
                 isUserEditing =
                   editorBox.getAttribute('data-editing') === 'true';
                 if (!(!isEditorActive && !isUserEditing)) {
-                  _context.next = 36;
+                  _context.next = 38;
                   break;
                 }
                 console.log('Обновляем редактор с серверными данными');
@@ -639,26 +643,26 @@ function _loadFromServer() {
                 updateLastSync();
                 showNotification('Список обновлён', 'success');
                 return _context.abrupt('return', true);
-              case 36:
+              case 38:
                 console.log('Пользователь редактирует, пропускаем обновление');
-              case 37:
+              case 39:
                 updateSyncStatus('Синхронизировано', true);
                 updateLastSync();
                 return _context.abrupt('return', false);
-              case 42:
-                _context.prev = 42;
+              case 44:
+                _context.prev = 44;
                 _context.t0 = _context['catch'](2);
                 console.log('JSONBin.io недоступен:', _context.t0.message);
                 updateSyncStatus('Только локально', false);
                 return _context.abrupt('return', null);
-              case 47:
+              case 49:
               case 'end':
                 return _context.stop();
             }
         },
         _callee,
         null,
-        [[2, 42]],
+        [[2, 44]],
       );
     }),
   );
@@ -735,13 +739,14 @@ function _saveToServer() {
               case 21:
                 response = _context2.sent;
                 if (!response.ok) {
-                  _context2.next = 35;
+                  _context2.next = 36;
                   break;
                 }
                 _context2.next = 25;
                 return response.json();
               case 25:
                 result = _context2.sent;
+                console.log('JSONBin raw response (save):', result);
                 lastServerHash = generateContentHash(state.html);
                 updateSyncStatus('Сохранено в облаке', true);
                 updateLastSync();
@@ -756,15 +761,15 @@ function _saveToServer() {
                 if (force) {
                   showNotification('Сохранено в облаке', 'success');
                 }
-                _context2.next = 36;
+                _context2.next = 37;
                 break;
-              case 35:
-                throw new Error('HTTP '.concat(response.status));
               case 36:
-                _context2.next = 45;
+                throw new Error('HTTP '.concat(response.status));
+              case 37:
+                _context2.next = 46;
                 break;
-              case 38:
-                _context2.prev = 38;
+              case 39:
+                _context2.prev = 39;
                 _context2.t0 = _context2['catch'](15);
                 console.error('Ошибка сохранения:', _context2.t0);
 
@@ -778,18 +783,18 @@ function _saveToServer() {
                 if (force) {
                   showNotification('Ошибка синхронизации', 'error');
                 }
-              case 45:
-                _context2.prev = 45;
+              case 46:
+                _context2.prev = 46;
                 isSyncing = false;
-                return _context2.finish(45);
-              case 48:
+                return _context2.finish(46);
+              case 49:
               case 'end':
                 return _context2.stop();
             }
         },
         _callee2,
         null,
-        [[15, 38, 45, 48]],
+        [[15, 39, 46, 49]],
       );
     }),
   );
@@ -941,13 +946,13 @@ function initRegistrationRedirect() {
   if (guestRedirectBtn) {
     guestRedirectBtn.addEventListener('click', function(e) {
       e.preventDefault();
-      window.open(registrationUrl, '_blank');
+      window.location.href = registrationUrl;
     });
   }
   document.addEventListener('click', function(e) {
     if (e.target && e.target.id === 'register-btn-bottom') {
       e.preventDefault();
-      window.open(registrationUrl, '_blank');
+      window.location.href = registrationUrl;
     }
   });
   checkRegistrationSuccess();
@@ -1082,7 +1087,7 @@ function addRegisterButtonToEditor() {
     _document$getElementB.addEventListener('click', function(e) {
       e.preventDefault();
       var registrationUrl = 'https://my-auth-page-crwj.vercel.app/';
-      window.open(registrationUrl, '_blank');
+      window.location.href = registrationUrl;
     });
 }
 
