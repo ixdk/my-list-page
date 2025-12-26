@@ -366,10 +366,26 @@ function initRegistrationRedirect() {
 function checkRegistrationSuccess() {
   const urlParams = new URLSearchParams(window.location.search);
   const registrationSuccess = urlParams.get('registration') === 'success';
+  const hashRegistered = (window.location.hash && window.location.hash.indexOf('registered') !== -1);
   const isRegistered = localStorage.getItem('userRegistered') === 'true';
 
-  if (registrationSuccess || isRegistered) {
+  if (registrationSuccess || hashRegistered || isRegistered) {
     localStorage.setItem('userRegistered', 'true');
+
+    // Убираем параметр/хеш из URL, чтобы не срабатывать повторно
+    try {
+      if (registrationSuccess) {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('registration');
+        window.history.replaceState({}, '', url.pathname + url.search + (window.location.hash || ''));
+      } else if (hashRegistered) {
+        const urlNoHash = window.location.href.split('#')[0];
+        window.history.replaceState({}, '', urlNoHash);
+      }
+    } catch (e) {
+      // ignore
+    }
+
     updateUIAfterRegistration();
   }
 }
